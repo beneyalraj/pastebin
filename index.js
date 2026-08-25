@@ -1,10 +1,9 @@
-require('dotenv').config();
+
 const path = require('path');
 const express = require('express');
 const fs = require('fs');
 
-// Import your app (API routes)
-const app = require('./src/app');
+const app = require('../src/app');
 
 // ---- Determine the static directory ----
 const staticDir = path.join(process.cwd(), 'client', 'dist');
@@ -48,13 +47,4 @@ app.get('*', (req, res) => {
   }
 });
 
-// ---- Export for Vercel ----
 module.exports = app;
-
-// ---- Local server ----
-if (require.main === module) {
-  const PORT = process.env.PORT || 3000;
-  app.listen(PORT, () => {
-    console.log(`🚀 Server running on http://localhost:${PORT}`);
-  });
-}
