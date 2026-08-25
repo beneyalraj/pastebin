@@ -1,27 +1,52 @@
 require('dotenv').config();
 const path = require('path');
 const express = require('express');
+const fs = require('fs');
+
+// Import your app (API routes)
 const app = require('./src/app');
 
-// ---- Path to the React build ----
-const staticDir = path.join(__dirname, 'client', 'dist');
-console.log('Serving static files from:', staticDir);
+// ---- Determine the static directory ----
+const staticDir = path.join(process.cwd(), 'client', 'dist');
+console.log('📁 Static directory:', staticDir);
 
-// ---- In production, serve the React frontend ----
-if (process.env.NODE_ENV === 'production') {
-  // Serve static assets (JS, CSS, images)
+// ---- Debug: log every request ----
+app.use((req, res, next) => {
+  console.log(`➡️  ${req.method} ${req.url}`);
+  next();
+});
+
+// ---- Debug: list files in static directory ----
+app.get('/debug-files', (req, res) => {
+  try {
+    const files = fs.readdirSync(staticDir, { withFileTypes: true });
+    const result = files.map(f => ({
+      name: f.name,
+      isDirectory: f.isDirectory(),
+    }));
+    res.json({ staticDir, files: result });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ---- Serve static files ----
+if (fs.existsSync(staticDir)) {
+  console.log('✅ Static directory exists, serving...');
   app.use(express.static(staticDir));
-
-  // All non-API routes go to index.html (for React Router)
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(staticDir, 'index.html'));
-  });
 } else {
-  // In development, just a friendly message
-  app.get('/', (req, res) => {
-    res.send('API is running. Use the Vite dev server for the frontend.');
-  });
+  console.error('❌ Static directory NOT found!');
 }
+
+// ---- Catch-all for React Router ----
+app.get('*', (req, res) => {
+  const indexPath = path.join(staticDir, 'index.html');
+  if (fs.existsSync(indexPath)) {
+    res.sendFile(indexPath);
+  } else {
+    res.status(404).send('index.html not found');
+  }
+});
 
 // ---- Export for Vercel ----
 module.exports = app;
