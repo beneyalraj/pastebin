@@ -6,10 +6,10 @@
       "use": "@vercel/node"
     },
     {
-      "src": "client/dist/**",
+      "src": "client/package.json",
       "use": "@vercel/static-build",
       "config": {
-        "distDir": "client/dist"
+        "distDir": "dist"
       }
     }
   ],
@@ -17,6 +17,10 @@
     {
       "src": "/api/(.*)",
       "dest": "index.js"
+    },
+    {
+      "src": "/assets/(.*)",
+      "dest": "client/dist/assets/$1"
     },
     {
       "src": "/(.*)",
