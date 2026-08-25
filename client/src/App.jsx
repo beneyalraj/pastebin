@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import CreatePaste from './components/CreatePaste';
 import ViewPaste from './components/ViewPaste';
-
+// cache bust v2
 function Navbar() {
   return (
     <nav className="navbar">
