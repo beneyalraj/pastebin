@@ -1,13 +1,11 @@
-// src/api.js
-const API_BASE = '/api';
+const API_BASE = '/api/routes';
 
 export async function createPaste({ content, expiresInMinutes, maxViews }) {
-  const response = await fetch(`${API_BASE}/routes`, { // Updated to match your backend route!
+  const response = await fetch(`${API_BASE}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ content, expiresInMinutes, maxViews }),
   });
-
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
     throw new Error(errorData.error || 'Failed to create paste');
@@ -16,8 +14,7 @@ export async function createPaste({ content, expiresInMinutes, maxViews }) {
 }
 
 export async function getPaste(slug) {
-  const response = await fetch(`${API_BASE}/routes/${slug}`); // Updated to match your backend route!
-
+  const response = await fetch(`${API_BASE}/${slug}`);
   if (response.status === 404) {
     const error = new Error('Paste not found');
     error.status = 404;
